@@ -40,6 +40,9 @@ class _RequestsPageState extends State<RequestsPage> {
                 return Column(
                   children:
                       snapshot.data!.docs.map((QueryDocumentSnapshot doc) {
+                    Timestamp? _timeStamp = doc.get('date_time');
+                    DateTime? _dateTime =
+                        _timeStamp != null ? _timeStamp.toDate() : null;
                     return Container(
                       child: doc.get('status') == 'PENDING'
                           ? Card(
@@ -49,12 +52,30 @@ class _RequestsPageState extends State<RequestsPage> {
                                   children: [
                                     IconButton(
                                       onPressed: () async {
+                                        dynamic itemSnapshot =
+                                            await FirebaseFirestore.instance
+                                                .collection('items')
+                                                .doc(doc.get('item_id'))
+                                                .get();
+                                        await FirebaseFirestore.instance
+                                            .collection('items')
+                                            .doc(doc.get('item_id'))
+                                            .update({
+                                          'item_quantity':
+                                              itemSnapshot['item_quantity'] -
+                                                  doc.get(
+                                                      'item_quantity_requested')
+                                        });
                                         await FirebaseFirestore.instance
                                             .collection('users')
                                             .doc(userData.id)
                                             .collection('requests')
                                             .doc(doc.id)
-                                            .update({'status': 'ACCEPTED'});
+                                            .update({
+                                          'date_time':
+                                              FieldValue.serverTimestamp(),
+                                          'status': 'ACCEPTED',
+                                        });
                                       },
                                       icon: Icon(
                                         Icons.check,
@@ -82,7 +103,8 @@ class _RequestsPageState extends State<RequestsPage> {
                                 ),
                                 title: Text(
                                     '${doc.get('item_name_requested')} --- ${doc.get('item_quantity_requested')}'),
-                                subtitle: Text('${doc.get('status')}'),
+                                subtitle: Text(
+                                    '${doc.get('status')} --- ${_dateTime!.month} ${_dateTime.day}, ${_dateTime.year} at ${_dateTime.hour}:${_dateTime.minute}'),
                               ),
                             )
                           : null,

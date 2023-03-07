@@ -40,6 +40,8 @@ class _AcceptedRequestsState extends State<AcceptedRequests> {
                 return Column(
                   children:
                       snapshot.data!.docs.map((QueryDocumentSnapshot doc) {
+                    Timestamp _timeStamp = doc.get('date_time');
+                    DateTime _dateTime = _timeStamp.toDate();
                     return Container(
                       child: doc.get('status') == 'ACCEPTED'
                           ? Card(
@@ -47,7 +49,7 @@ class _AcceptedRequestsState extends State<AcceptedRequests> {
                                 title: Text(
                                     '${doc.get('item_name_requested')} --- ${userData['full_name']}'),
                                 subtitle: Text(
-                                    '${doc.get('item_quantity_requested')} --- ${doc.get('status')}'),
+                                    '${doc.get('item_quantity_requested')} --- ${doc.get('status')} --- ${_dateTime.month} ${_dateTime.day}, ${_dateTime.year} at ${_dateTime.hour}:${_dateTime.minute}'),
                               ),
                             )
                           : null,
