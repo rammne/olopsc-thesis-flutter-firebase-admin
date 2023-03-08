@@ -1,6 +1,7 @@
 import 'package:admin/views/history_page.dart';
 import 'package:admin/views/item_list.dart';
 import 'package:admin/views/requests_page.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
 class DesktopAdminPanel extends StatefulWidget {
@@ -58,7 +59,7 @@ class _DesktopAdminPanelState extends State<DesktopAdminPanel> {
                           style: TextStyle(color: Colors.black),
                         ),
                       )
-                    : null,
+                    : IconButton(onPressed: () {}, icon: Icon(Icons.delete)),
                 minExtendedWidth: 150,
                 destinations: [
                   NavigationRailDestination(

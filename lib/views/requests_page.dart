@@ -1,9 +1,8 @@
+import 'package:admin/views/request_form.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
 class RequestsPage extends StatefulWidget {
-  const RequestsPage({super.key});
-
   @override
   State<RequestsPage> createState() => _RequestsPageState();
 }
@@ -47,6 +46,19 @@ class _RequestsPageState extends State<RequestsPage> {
                       child: doc.get('status') == 'PENDING'
                           ? Card(
                               child: ListTile(
+                                onTap: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => RequestForm(
+                                          requestID: doc.id,
+                                          itemQuantityRequested: doc
+                                              .get('item_quantity_requested'),
+                                          userID: userData.id,
+                                          itemID: doc.get('item_id')),
+                                    ),
+                                  );
+                                },
                                 trailing: Row(
                                   mainAxisSize: MainAxisSize.min,
                                   children: [
@@ -102,7 +114,7 @@ class _RequestsPageState extends State<RequestsPage> {
                                   ],
                                 ),
                                 title: Text(
-                                    '${doc.get('item_name_requested')} --- ${doc.get('item_quantity_requested')}'),
+                                    '${doc.get('item_name_requested')} --- ${doc.get('item_quantity_requested')} requested by ${userData.get('full_name')}'),
                                 subtitle: Text(
                                     '${doc.get('status')} --- ${_dateTime!.month} ${_dateTime.day}, ${_dateTime.year} at ${_dateTime.hour}:${_dateTime.minute}'),
                               ),
