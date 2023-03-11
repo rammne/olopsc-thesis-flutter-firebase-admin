@@ -11,6 +11,21 @@ class AcceptedRequests extends StatefulWidget {
 class _AcceptedRequestsState extends State<AcceptedRequests> {
   @override
   Widget build(BuildContext context) {
+    void _showSettings() {
+      showModalBottomSheet(
+        backgroundColor: Colors.transparent,
+        context: context,
+        builder: ((context) {
+          return Container(
+            height: MediaQuery.of(context).size.height,
+            child: Center(
+              child: Text('data'),
+            ),
+          );
+        }),
+      );
+    }
+
     return StreamBuilder(
       stream: FirebaseFirestore.instance.collection('users').snapshots(),
       builder: (context, userSnapshot) {
@@ -46,6 +61,12 @@ class _AcceptedRequestsState extends State<AcceptedRequests> {
                       child: doc.get('status') == 'ACCEPTED'
                           ? Card(
                               child: ListTile(
+                                trailing: IconButton(
+                                  onPressed: () {
+                                    _showSettings();
+                                  },
+                                  icon: Icon(Icons.mail),
+                                ),
                                 title: Text(
                                     '${doc.get('item_name_requested')} --- ${userData['full_name']}'),
                                 subtitle: Text(

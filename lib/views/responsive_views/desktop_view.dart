@@ -25,6 +25,24 @@ class _DesktopAdminPanelState extends State<DesktopAdminPanel> {
       );
     }
 
+    Future<void> deleteAllRequests() async {
+      QuerySnapshot usersSnapshot =
+          await FirebaseFirestore.instance.collection('users').get();
+
+      WriteBatch batch = FirebaseFirestore.instance.batch();
+
+      for (DocumentSnapshot userDoc in usersSnapshot.docs) {
+        QuerySnapshot requestsSnapshot =
+            await userDoc.reference.collection('requests').get();
+
+        for (DocumentSnapshot requestDoc in requestsSnapshot.docs) {
+          batch.delete(requestDoc.reference);
+        }
+      }
+
+      await batch.commit();
+    }
+
     Widget page = ItemList();
     switch (selectedIndex) {
       case 0:
@@ -59,7 +77,11 @@ class _DesktopAdminPanelState extends State<DesktopAdminPanel> {
                           style: TextStyle(color: Colors.black),
                         ),
                       )
-                    : IconButton(onPressed: () {}, icon: Icon(Icons.delete)),
+                    : IconButton(
+                        onPressed: () {
+                          deleteAllRequests();
+                        },
+                        icon: Icon(Icons.delete)),
                 minExtendedWidth: 150,
                 destinations: [
                   NavigationRailDestination(
