@@ -37,8 +37,7 @@ class _RequestsPageState extends State<RequestsPage> {
                   return Center(child: Text('Loading...'));
                 }
                 return Column(
-                  children:
-                      snapshot.data!.docs.map((QueryDocumentSnapshot doc) {
+                  children: snapshot.data!.docs.map((doc) {
                     Timestamp? _timeStamp = doc.get('date_time');
                     DateTime? _dateTime =
                         _timeStamp != null ? _timeStamp.toDate() : null;

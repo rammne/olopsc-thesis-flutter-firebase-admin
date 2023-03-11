@@ -4,6 +4,8 @@ import 'package:admin/views/requests_page.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
+import '../groups.dart';
+
 class DesktopAdminPanel extends StatefulWidget {
   const DesktopAdminPanel({super.key});
 
@@ -46,12 +48,15 @@ class _DesktopAdminPanelState extends State<DesktopAdminPanel> {
     Widget page = ItemList();
     switch (selectedIndex) {
       case 0:
-        page = ItemList();
+        page = Groups();
         break;
       case 1:
-        page = RequestsPage();
+        page = ItemList();
         break;
       case 2:
+        page = RequestsPage();
+        break;
+      case 3:
         page = History();
         break;
       default:
@@ -84,6 +89,10 @@ class _DesktopAdminPanelState extends State<DesktopAdminPanel> {
                         icon: Icon(Icons.delete)),
                 minExtendedWidth: 150,
                 destinations: [
+                  NavigationRailDestination(
+                    icon: Icon(Icons.group),
+                    label: Text('Groups'),
+                  ),
                   NavigationRailDestination(
                     icon: Icon(Icons.list),
                     label: Text('List'),

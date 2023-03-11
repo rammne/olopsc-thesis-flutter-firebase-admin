@@ -11,15 +11,21 @@ class AcceptedRequests extends StatefulWidget {
 class _AcceptedRequestsState extends State<AcceptedRequests> {
   @override
   Widget build(BuildContext context) {
-    void _showSettings() {
+    void _showSettings(remarks) {
       showModalBottomSheet(
-        backgroundColor: Colors.transparent,
+        backgroundColor: Colors.grey[350],
         context: context,
+        constraints:
+            BoxConstraints(maxWidth: MediaQuery.of(context).size.width / 2),
+        shape: Border.all(width: 5, color: Color(Colors.blue.shade300.value)),
         builder: ((context) {
           return Container(
-            height: MediaQuery.of(context).size.height,
+            height: 500,
             child: Center(
-              child: Text('data'),
+              child: Text(
+                '${remarks}',
+                style: TextStyle(fontSize: 20),
+              ),
             ),
           );
         }),
@@ -63,7 +69,11 @@ class _AcceptedRequestsState extends State<AcceptedRequests> {
                               child: ListTile(
                                 trailing: IconButton(
                                   onPressed: () {
-                                    _showSettings();
+                                    try {
+                                      _showSettings(doc.get('remarks'));
+                                    } catch (e) {
+                                      _showSettings('No remarks');
+                                    }
                                   },
                                   icon: Icon(Icons.mail),
                                 ),
