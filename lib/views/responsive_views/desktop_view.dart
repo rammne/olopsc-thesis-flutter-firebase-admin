@@ -4,7 +4,7 @@ import 'package:admin/views/requests_page.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
-import '../groups.dart';
+import '../students_list.dart';
 
 class DesktopAdminPanel extends StatefulWidget {
   const DesktopAdminPanel({super.key});
@@ -48,7 +48,7 @@ class _DesktopAdminPanelState extends State<DesktopAdminPanel> {
     Widget page = ItemList();
     switch (selectedIndex) {
       case 0:
-        page = Groups();
+        page = StudentsList();
         break;
       case 1:
         page = ItemList();
@@ -68,7 +68,7 @@ class _DesktopAdminPanelState extends State<DesktopAdminPanel> {
           children: [
             SafeArea(
               child: NavigationRail(
-                trailing: selectedIndex == 0
+                trailing: selectedIndex == 1
                     ? TextButton.icon(
                         onPressed: () async {
                           _showSettings();
@@ -82,16 +82,18 @@ class _DesktopAdminPanelState extends State<DesktopAdminPanel> {
                           style: TextStyle(color: Colors.black),
                         ),
                       )
-                    : IconButton(
-                        onPressed: () {
-                          deleteAllRequests();
-                        },
-                        icon: Icon(Icons.delete)),
+                    : selectedIndex != 0
+                        ? IconButton(
+                            onPressed: () {
+                              deleteAllRequests();
+                            },
+                            icon: Icon(Icons.delete))
+                        : null,
                 minExtendedWidth: 150,
                 destinations: [
                   NavigationRailDestination(
                     icon: Icon(Icons.group),
-                    label: Text('Groups'),
+                    label: Text('Students'),
                   ),
                   NavigationRailDestination(
                     icon: Icon(Icons.list),

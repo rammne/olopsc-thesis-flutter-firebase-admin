@@ -8,6 +8,7 @@ class RequestsPage extends StatefulWidget {
 }
 
 class _RequestsPageState extends State<RequestsPage> {
+  int i = 0;
   @override
   Widget build(BuildContext context) {
     return StreamBuilder(
@@ -17,7 +18,7 @@ class _RequestsPageState extends State<RequestsPage> {
           return Text('Something went wrong (Users)');
         }
         if (userSnapshot.connectionState == ConnectionState.waiting) {
-          return Center(child: Text('Loading...'));
+          return Center(child: CircularProgressIndicator());
         }
         return ListView.builder(
           itemCount: userSnapshot.data!.docs.length,
@@ -34,10 +35,11 @@ class _RequestsPageState extends State<RequestsPage> {
                   return Text('Something went wrong (Requests)');
                 }
                 if (snapshot.connectionState == ConnectionState.waiting) {
-                  return Center(child: Text('Loading...'));
+                  return Text('');
                 }
                 return Column(
                   children: snapshot.data!.docs.map((doc) {
+                    print(i);
                     Timestamp? _timeStamp = doc.get('date_time');
                     DateTime? _dateTime =
                         _timeStamp != null ? _timeStamp.toDate() : null;
