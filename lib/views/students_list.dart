@@ -9,6 +9,7 @@ class StudentsList extends StatefulWidget {
 
 class _StudentsListState extends State<StudentsList> {
   dynamic studentNumberQuery = '';
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -16,7 +17,8 @@ class _StudentsListState extends State<StudentsList> {
         stream: (studentNumberQuery != '' && studentNumberQuery != null)
             ? FirebaseFirestore.instance
                 .collection('users')
-                .where('student_number', isEqualTo: studentNumberQuery)
+                .where('student_number_search',
+                    arrayContains: studentNumberQuery)
                 .snapshots()
             : FirebaseFirestore.instance.collection('users').snapshots(),
         builder: (context, snapshot) {
