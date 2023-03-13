@@ -38,11 +38,8 @@ class _AcceptedRequestsState extends State<AcceptedRequests> {
         if (userSnapshot.hasError) {
           return Text('Something went wrong (User)');
         }
-        if (userSnapshot.connectionState == ConnectionState.waiting) {
-          return Text('Loading...');
-        }
         return ListView.builder(
-          itemCount: userSnapshot.data!.docs.length,
+          itemCount: userSnapshot.data?.docs.length ?? 0,
           itemBuilder: (context, index) {
             dynamic userData = userSnapshot.data!.docs[index];
             return StreamBuilder(
@@ -55,37 +52,35 @@ class _AcceptedRequestsState extends State<AcceptedRequests> {
                 if (snapshot.hasError) {
                   return Text('Something went wrong (Requests)');
                 }
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return Text('Loading...');
-                }
                 return Column(
-                  children:
-                      snapshot.data!.docs.map((QueryDocumentSnapshot doc) {
-                    Timestamp _timeStamp = doc.get('date_time');
-                    DateTime _dateTime = _timeStamp.toDate();
-                    return Container(
-                      child: doc.get('status') == 'ACCEPTED'
-                          ? Card(
-                              child: ListTile(
-                                trailing: IconButton(
-                                  onPressed: () {
-                                    try {
-                                      _showSettings(doc.get('remarks'));
-                                    } catch (e) {
-                                      _showSettings('No remarks');
-                                    }
-                                  },
-                                  icon: Icon(Icons.mail),
-                                ),
-                                title: Text(
-                                    '${doc.get('item_name_requested')} --- ${userData['full_name']}'),
-                                subtitle: Text(
-                                    '${doc.get('item_quantity_requested')} --- ${doc.get('status')} --- ${_dateTime.month} ${_dateTime.day}, ${_dateTime.year} at ${_dateTime.hour}:${_dateTime.minute}'),
-                              ),
-                            )
-                          : null,
-                    );
-                  }).toList(),
+                  children: snapshot.hasData && snapshot.data != null
+                      ? snapshot.data!.docs.map((QueryDocumentSnapshot doc) {
+                          Timestamp _timeStamp = doc.get('date_time');
+                          DateTime _dateTime = _timeStamp.toDate();
+                          return Container(
+                            child: doc.get('status') == 'ACCEPTED'
+                                ? Card(
+                                    child: ListTile(
+                                      trailing: IconButton(
+                                        onPressed: () {
+                                          try {
+                                            _showSettings(doc.get('remarks'));
+                                          } catch (e) {
+                                            _showSettings('No remarks');
+                                          }
+                                        },
+                                        icon: Icon(Icons.mail),
+                                      ),
+                                      title: Text(
+                                          '${doc.get('item_name_requested')} --- ${userData['full_name']}'),
+                                      subtitle: Text(
+                                          '${doc.get('item_quantity_requested')} --- ${doc.get('status')} --- ${_dateTime.month} ${_dateTime.day}, ${_dateTime.year} at ${_dateTime.hour}:${_dateTime.minute}'),
+                                    ),
+                                  )
+                                : null,
+                          );
+                        }).toList()
+                      : [],
                 );
               },
             );
