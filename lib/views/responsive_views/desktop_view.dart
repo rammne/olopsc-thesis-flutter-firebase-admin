@@ -4,6 +4,7 @@ import 'package:admin/views/requests_page.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
+import '../add_item_form.dart';
 import '../students_list.dart';
 
 class DesktopAdminPanel extends StatefulWidget {
@@ -18,13 +19,13 @@ class _DesktopAdminPanelState extends State<DesktopAdminPanel> {
   int selectedIndex = 0;
   @override
   Widget build(BuildContext context) {
-    void _showSettings() {
+    void _showSettings() async {
       showModalBottomSheet(
-        context: context,
-        builder: (context) {
-          return Container();
-        },
-      );
+          constraints: BoxConstraints(maxWidth: 400),
+          shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.all(Radius.circular(30))),
+          context: context,
+          builder: (context) => AddItemForm());
     }
 
     Future<void> deleteAllRequests() async {

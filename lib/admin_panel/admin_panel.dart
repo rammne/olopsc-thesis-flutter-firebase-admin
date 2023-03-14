@@ -8,13 +8,12 @@ class AdminPanel extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return LayoutBuilder(builder: (context, constraints) {
-      if (constraints.maxWidth <= 400) {
-        return Text('MOBILE');
-      } else if (constraints.maxWidth <= 800) {
-        return Text('TABLET');
-      } else {
-        return DesktopAdminPanel();
+      if (constraints.maxHeight <= 350) {
+        return Center(
+          child: Text('Screen size is too small to work with.'),
+        );
       }
+      return DesktopAdminPanel();
     });
   }
 }

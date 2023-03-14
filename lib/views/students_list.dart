@@ -30,71 +30,78 @@ class _StudentsListState extends State<StudentsList> {
                 SizedBox(
                   height: 15,
                 ),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 200),
-                  child: TextField(
-                    onChanged: (value) {
-                      setState(() {
-                        studentNumberQuery = value;
-                      });
-                    },
-                    decoration: InputDecoration(
-                      hintText: 'Student Number search for now',
-                      icon: Icon(Icons.search),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(30),
-                      ),
-                    ),
-                  ),
+                Container(
+                  child: MediaQuery.of(context).size.width <= 700
+                      ? null
+                      : Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 200),
+                          child: TextField(
+                            onChanged: (value) {
+                              setState(() {
+                                studentNumberQuery = value;
+                              });
+                            },
+                            decoration: InputDecoration(
+                              hintText: 'Student Number search for now',
+                              icon: Icon(Icons.search),
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(30),
+                              ),
+                            ),
+                          ),
+                        ),
                 ),
                 SizedBox(
                   height: 15,
                 ),
-                SizedBox(
-                  width: MediaQuery.of(context).size.width,
-                  child: DataTable(
-                    columns: [
-                      DataColumn(
-                        label: Text(
-                          'Student Name',
-                          style: TextStyle(fontWeight: FontWeight.bold),
+                SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  child: SizedBox(
+                    width: MediaQuery.of(context).size.width,
+                    child: DataTable(
+                      columns: [
+                        DataColumn(
+                          label: Text(
+                            'Student Name',
+                            style: TextStyle(fontWeight: FontWeight.bold),
+                          ),
                         ),
-                      ),
-                      DataColumn(
-                        label: Text(
-                          'Student ID',
-                          style: TextStyle(fontWeight: FontWeight.bold),
+                        DataColumn(
+                          label: Text(
+                            'Student ID',
+                            style: TextStyle(fontWeight: FontWeight.bold),
+                          ),
                         ),
-                      ),
-                      DataColumn(
-                        label: Text(
-                          'Email',
-                          style: TextStyle(fontWeight: FontWeight.bold),
+                        DataColumn(
+                          label: Text(
+                            'Email',
+                            style: TextStyle(fontWeight: FontWeight.bold),
+                          ),
                         ),
-                      ),
-                      DataColumn(
-                        label: Text(
-                          'Program and Year Level',
-                          style: TextStyle(fontWeight: FontWeight.bold),
+                        DataColumn(
+                          label: Text(
+                            'Program and Year Level',
+                            style: TextStyle(fontWeight: FontWeight.bold),
+                          ),
                         ),
-                      ),
-                    ],
-                    rows: (snapshot.data?.docs ?? []).map((doc) {
-                      return DataRow(cells: [
-                        DataCell(
-                          Text('${doc.get('full_name')}'),
-                        ),
-                        DataCell(
-                          Text('${doc.get('email')}'),
-                        ),
-                        DataCell(
-                          Text('${doc.get('student_number')}'),
-                        ),
-                        DataCell(
-                          Text('${doc.get('program')}'),
-                        ),
-                      ]);
-                    }).toList(),
+                      ],
+                      rows: (snapshot.data?.docs ?? []).map((doc) {
+                        return DataRow(cells: [
+                          DataCell(
+                            Text('${doc.get('full_name')}'),
+                          ),
+                          DataCell(
+                            Text('${doc.get('email')}'),
+                          ),
+                          DataCell(
+                            Text('${doc.get('student_number')}'),
+                          ),
+                          DataCell(
+                            Text('${doc.get('program')}'),
+                          ),
+                        ]);
+                      }).toList(),
+                    ),
                   ),
                 ),
               ],
