@@ -20,6 +20,7 @@ class RequestForm extends StatefulWidget {
 
 class _RequestFormState extends State<RequestForm> {
   final _formKey = GlobalKey<FormState>();
+  String error = '';
   String remarks = '';
   int? updatedQuantity;
   @override
@@ -38,30 +39,40 @@ class _RequestFormState extends State<RequestForm> {
                       backgroundColor: MaterialStateProperty.all(Colors.black),
                     ),
                     onPressed: () async {
-                      dynamic itemSnapshot = await FirebaseFirestore.instance
-                          .collection('items')
-                          .doc(widget.itemID)
-                          .get();
+                      if (_formKey.currentState!.validate()) {
+                        try {
+                          dynamic itemSnapshot = await FirebaseFirestore
+                              .instance
+                              .collection('items')
+                              .doc(widget.itemID)
+                              .get();
 
-                      await FirebaseFirestore.instance
-                          .collection('items')
-                          .doc(widget.itemID)
-                          .update({
-                        'item_quantity':
-                            itemSnapshot['item_quantity'] - updatedQuantity,
-                      });
-                      await FirebaseFirestore.instance
-                          .collection('users')
-                          .doc(widget.userID)
-                          .collection('requests')
-                          .doc(widget.requestID)
-                          .set({
-                        'item_quantity_requested': updatedQuantity,
-                        'date_time': FieldValue.serverTimestamp(),
-                        'remarks': remarks,
-                        'status': 'ACCEPTED'
-                      }, SetOptions(merge: true));
-                      Navigator.pop(context);
+                          await FirebaseFirestore.instance
+                              .collection('items')
+                              .doc(widget.itemID)
+                              .update({
+                            'item_quantity':
+                                itemSnapshot['item_quantity'] - updatedQuantity,
+                          });
+                          await FirebaseFirestore.instance
+                              .collection('users')
+                              .doc(widget.userID)
+                              .collection('requests')
+                              .doc(widget.requestID)
+                              .set({
+                            'item_quantity_requested': updatedQuantity,
+                            'date_time': FieldValue.serverTimestamp(),
+                            'remarks': remarks,
+                            'status': 'ACCEPTED'
+                          }, SetOptions(merge: true));
+                          Navigator.pop(context);
+                        } catch (e) {
+                          print(e.toString());
+                          setState(() {
+                            error = 'Text is not allowed';
+                          });
+                        }
+                      }
                     },
                     child: Text('Accept'),
                   ),
@@ -84,6 +95,7 @@ class _RequestFormState extends State<RequestForm> {
                     SizedBox(
                       width: 50,
                       child: TextFormField(
+                        validator: (value) => value!.isNotEmpty ? null : '',
                         onChanged: (value) {
                           setState(() {
                             updatedQuantity = int.parse(value);
@@ -91,10 +103,14 @@ class _RequestFormState extends State<RequestForm> {
                         },
                         initialValue: widget.itemQuantityRequested.toString(),
                         decoration: InputDecoration(
-                            border: InputBorder.none,
+                            border: OutlineInputBorder(),
                             filled: true,
                             fillColor: Colors.grey[400]),
                       ),
+                    ),
+                    Text(
+                      error,
+                      style: TextStyle(color: Colors.red, fontSize: 12),
                     ),
                     SizedBox(
                       height: 15,

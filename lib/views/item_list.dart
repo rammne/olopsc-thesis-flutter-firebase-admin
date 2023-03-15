@@ -19,55 +19,67 @@ class _ItemListState extends State<ItemList> {
           if (snapshot.hasError) {
             return Text('Something went wrong');
           } else {
-            return ListView(
-              children: snapshot.hasData
-                  ? snapshot.data!.docs.map((QueryDocumentSnapshot doc) {
-                      return Card(
-                        child: ListTile(
-                          trailing: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              IconButton(
-                                  onPressed: () async {
-                                    dynamic data = await FirebaseFirestore
-                                        .instance
-                                        .collection('items')
-                                        .doc(doc.id)
-                                        .get();
-                                    await FirebaseFirestore.instance
-                                        .collection('items')
-                                        .doc(doc.id)
-                                        .update({
-                                      'item_quantity': data['item_quantity'] - 1
-                                    });
-                                  },
-                                  icon: Icon(Icons.arrow_left)),
-                              Text('${doc.get('item_quantity')}'),
-                              IconButton(
-                                  onPressed: () async {
-                                    dynamic data = await FirebaseFirestore
-                                        .instance
-                                        .collection('items')
-                                        .doc(doc.id)
-                                        .get();
-                                    await FirebaseFirestore.instance
-                                        .collection('items')
-                                        .doc(doc.id)
-                                        .update({
-                                      'item_quantity': data['item_quantity'] + 1
-                                    });
-                                  },
-                                  icon: Icon(Icons.arrow_right)),
-                            ],
-                          ),
-                          leading: Icon(
-                            Icons.image,
-                          ),
-                          title: Text('${doc.get('item_name')}'),
-                        ),
-                      );
-                    }).toList()
-                  : [],
+            return ListView.builder(
+              itemCount: snapshot.data?.docs.length ?? 0,
+              itemBuilder: (context, index) {
+                DocumentSnapshot itemData = snapshot.data!.docs[index];
+                return Dismissible(
+                  background: Container(
+                    color: Colors.grey[400],
+                  ),
+                  key: UniqueKey(),
+                  child: Card(
+                    child: ListTile(
+                      trailing: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          IconButton(
+                              onPressed: () async {
+                                dynamic data = await FirebaseFirestore.instance
+                                    .collection('items')
+                                    .doc(itemData.id)
+                                    .get();
+                                await FirebaseFirestore.instance
+                                    .collection('items')
+                                    .doc(itemData.id)
+                                    .update({
+                                  'item_quantity': data['item_quantity'] - 1
+                                });
+                              },
+                              icon: Icon(Icons.arrow_left)),
+                          Text('${itemData['item_quantity']}'),
+                          IconButton(
+                              onPressed: () async {
+                                dynamic data = await FirebaseFirestore.instance
+                                    .collection('items')
+                                    .doc(itemData.id)
+                                    .get();
+                                await FirebaseFirestore.instance
+                                    .collection('items')
+                                    .doc(itemData.id)
+                                    .update({
+                                  'item_quantity': data['item_quantity'] + 1
+                                });
+                              },
+                              icon: Icon(Icons.arrow_right)),
+                        ],
+                      ),
+                      leading: Icon(
+                        Icons.image,
+                      ),
+                      title: Text('${itemData['item_name']}'),
+                    ),
+                  ),
+                  onDismissed: (direction) {
+                    itemData.reference.delete();
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text("Item dismissed"),
+                      ),
+                    );
+                  },
+                );
+              },
             );
           }
         },

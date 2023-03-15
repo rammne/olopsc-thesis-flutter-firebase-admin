@@ -1,5 +1,6 @@
 import 'package:admin/admin_panel/admin_panel.dart';
 import 'package:admin/firebase_options.dart';
+import 'package:admin/views/responsive_views/desktop_view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -28,7 +29,7 @@ class MyApp extends StatelessWidget {
             NavigationRailThemeData(backgroundColor: Colors.grey[350]),
         scaffoldBackgroundColor: Colors.grey[350],
       ),
-      home: AdminPanel(),
+      home: DesktopAdminPanel(),
     );
   }
 }

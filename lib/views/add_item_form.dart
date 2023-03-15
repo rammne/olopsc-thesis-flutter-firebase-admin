@@ -36,10 +36,10 @@ class _AddItemFormState extends State<AddItemForm> {
                 });
               },
               onFieldSubmitted: (value) async {
-                Navigator.pop(context);
                 if (_formKey.currentState!.validate() &&
                     (itemName != '' && itemName != null) &&
                     (itemQuantity != '' && itemQuantity != null)) {
+                  Navigator.pop(context);
                   await FirebaseFirestore.instance.collection('items').add(
                       {'item_name': itemName, 'item_quantity': itemQuantity});
                 }
@@ -56,7 +56,7 @@ class _AddItemFormState extends State<AddItemForm> {
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 175),
             child: TextFormField(
-              validator: (value) => value!.isNotEmpty ? null : '',
+              validator: (value) => value == int ? null : '',
               decoration: InputDecoration(
                 border: OutlineInputBorder(),
               ),
@@ -70,10 +70,10 @@ class _AddItemFormState extends State<AddItemForm> {
                 });
               },
               onFieldSubmitted: (value) async {
-                Navigator.pop(context);
                 if (_formKey.currentState!.validate() &&
                     (itemName != '' && itemName != null) &&
                     (itemQuantity != '' && itemQuantity != null)) {
+                  Navigator.pop(context);
                   await FirebaseFirestore.instance.collection('items').add(
                       {'item_name': itemName, 'item_quantity': itemQuantity});
                 }

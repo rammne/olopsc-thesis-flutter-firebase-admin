@@ -55,6 +55,7 @@ class _StudentsListState extends State<StudentsList> {
                   height: 15,
                 ),
                 SingleChildScrollView(
+                  // SingleChildScrollView can be removed
                   scrollDirection: Axis.horizontal,
                   child: SizedBox(
                     width: MediaQuery.of(context).size.width,
@@ -91,10 +92,10 @@ class _StudentsListState extends State<StudentsList> {
                             Text('${doc.get('full_name')}'),
                           ),
                           DataCell(
-                            Text('${doc.get('email')}'),
+                            Text('${doc.get('student_number')}'),
                           ),
                           DataCell(
-                            Text('${doc.get('student_number')}'),
+                            Text('${doc.get('email')}'),
                           ),
                           DataCell(
                             Text('${doc.get('program')}'),
