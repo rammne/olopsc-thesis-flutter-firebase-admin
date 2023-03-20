@@ -17,6 +17,24 @@ class DesktopAdminPanel extends StatefulWidget {
 class _DesktopAdminPanelState extends State<DesktopAdminPanel> {
   //states
   int selectedIndex = 0;
+  bool status = false;
+
+  Stream<QuerySnapshot> _status =
+      FirebaseFirestore.instance.collection('status').snapshots();
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+
+    _status.listen((event) {
+      event.docs.map((e) {
+        setState(() {
+          status = e.get('status');
+        });
+      });
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     void _showSettings() async {
@@ -63,65 +81,93 @@ class _DesktopAdminPanelState extends State<DesktopAdminPanel> {
       default:
         throw UnimplementedError('Something went wrong with ${selectedIndex}');
     }
-    return LayoutBuilder(builder: (context, constraints) {
-      return Scaffold(
-        body: Row(
-          children: [
-            SafeArea(
-              child: NavigationRail(
-                trailing: selectedIndex == 1
-                    ? TextButton.icon(
-                        onPressed: () async {
-                          _showSettings();
-                        },
-                        icon: Icon(
-                          Icons.add,
-                          color: Colors.black,
+    return StreamBuilder(
+        stream: FirebaseFirestore.instance.collection('status').snapshots(),
+        builder: (context, snapshot) {
+          return LayoutBuilder(builder: (context, constraints) {
+            return Scaffold(
+              body: Row(
+                children: [
+                  SafeArea(
+                    child: NavigationRail(
+                      trailing: selectedIndex == 1
+                          ? TextButton.icon(
+                              onPressed: () async {
+                                _showSettings();
+                              },
+                              icon: Icon(
+                                Icons.add,
+                                color: Colors.black,
+                              ),
+                              label: Text(
+                                'Add Item',
+                                style: TextStyle(color: Colors.black),
+                              ),
+                            )
+                          : selectedIndex != 0
+                              ? IconButton(
+                                  onPressed: () {
+                                    deleteAllRequests();
+                                  },
+                                  icon: Icon(Icons.delete))
+                              : Column(
+                                  children: snapshot.data?.docs.map((doc) {
+                                        return Row(
+                                          children: [
+                                            Text(
+                                              'Activate',
+                                              style: TextStyle(
+                                                  fontSize: 16,
+                                                  fontWeight: FontWeight.bold),
+                                            ),
+                                            Checkbox(
+                                              value: doc.get('status'),
+                                              onChanged: (value) async {
+                                                await doc.reference
+                                                    .update({'status': value});
+                                                setState(() {
+                                                  status = value!;
+                                                });
+                                              },
+                                            ),
+                                          ],
+                                        );
+                                      }).toList() ??
+                                      [],
+                                ),
+                      minExtendedWidth: 150,
+                      destinations: [
+                        NavigationRailDestination(
+                          icon: Icon(Icons.group),
+                          label: Text('Students'),
                         ),
-                        label: Text(
-                          'Add Item',
-                          style: TextStyle(color: Colors.black),
+                        NavigationRailDestination(
+                          icon: Icon(Icons.list),
+                          label: Text('List'),
                         ),
-                      )
-                    : selectedIndex != 0
-                        ? IconButton(
-                            onPressed: () {
-                              deleteAllRequests();
-                            },
-                            icon: Icon(Icons.delete))
-                        : null,
-                minExtendedWidth: 150,
-                destinations: [
-                  NavigationRailDestination(
-                    icon: Icon(Icons.group),
-                    label: Text('Students'),
+                        NavigationRailDestination(
+                          icon: Icon(Icons.pending),
+                          label: Text('Requests'),
+                        ),
+                        NavigationRailDestination(
+                          icon: Icon(Icons.history),
+                          label: Text('History'),
+                        ),
+                      ],
+                      selectedIndex: selectedIndex,
+                      extended: constraints.maxWidth >= 600,
+                      onDestinationSelected: (value) {
+                        setState(() {
+                          selectedIndex = value;
+                        });
+                      },
+                    ),
                   ),
-                  NavigationRailDestination(
-                    icon: Icon(Icons.list),
-                    label: Text('List'),
-                  ),
-                  NavigationRailDestination(
-                    icon: Icon(Icons.pending),
-                    label: Text('Requests'),
-                  ),
-                  NavigationRailDestination(
-                    icon: Icon(Icons.history),
-                    label: Text('History'),
-                  ),
+                  Expanded(child: page)
                 ],
-                selectedIndex: selectedIndex,
-                extended: constraints.maxWidth >= 600,
-                onDestinationSelected: (value) {
-                  setState(() {
-                    selectedIndex = value;
-                  });
-                },
               ),
-            ),
-            Expanded(child: page)
-          ],
-        ),
-      );
-    });
+            );
+          });
+        });
   }
 }
