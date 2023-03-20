@@ -56,7 +56,6 @@ class _AddItemFormState extends State<AddItemForm> {
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 175),
             child: TextFormField(
-              validator: (value) => value == int ? null : '',
               decoration: InputDecoration(
                 border: OutlineInputBorder(),
               ),
