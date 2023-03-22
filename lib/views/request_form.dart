@@ -8,7 +8,9 @@ class RequestForm extends StatefulWidget {
   String requestID;
   String userID;
   String itemID;
+  String itemNameRequested;
   RequestForm({
+    required this.itemNameRequested,
     required this.itemQuantityRequested,
     required this.requestID,
     required this.userID,
@@ -57,14 +59,15 @@ class _RequestFormState extends State<RequestForm> {
                           await FirebaseFirestore.instance
                               .collection('users')
                               .doc(widget.userID)
-                              .collection('requests')
-                              .doc(widget.requestID)
-                              .set({
-                            'item_quantity_requested': updatedQuantity,
+                              .collection('accepted_requests')
+                              .add({
+                            'item_id': widget.itemID,
+                            'item_name_accepted': widget.itemNameRequested,
+                            'item_quantity_accepted': updatedQuantity,
                             'date_time': FieldValue.serverTimestamp(),
                             'remarks': remarks,
                             'status': 'ACCEPTED'
-                          }, SetOptions(merge: true));
+                          });
                           Navigator.pop(context);
                         } catch (e) {
                           print(e.toString());
@@ -80,7 +83,7 @@ class _RequestFormState extends State<RequestForm> {
               ],
               iconTheme: IconThemeData(color: Colors.black),
               elevation: 0,
-              backgroundColor: Colors.grey[350],
+              backgroundColor: Colors.blue[100],
             ),
             body: Container(
               margin: EdgeInsets.fromLTRB(50, 0, 50, 50),
@@ -105,7 +108,7 @@ class _RequestFormState extends State<RequestForm> {
                         decoration: InputDecoration(
                             border: OutlineInputBorder(),
                             filled: true,
-                            fillColor: Colors.grey[400]),
+                            fillColor: Colors.white),
                       ),
                     ),
                     Text(
@@ -124,14 +127,16 @@ class _RequestFormState extends State<RequestForm> {
                       child: TextFormField(
                         onChanged: (value) {
                           setState(() {
-                            remarks = value;
+                            remarks = value != '' && value != null
+                                ? value
+                                : 'No Remarks';
                           });
                         },
                         maxLines: 5,
                         decoration: InputDecoration(
                             border: InputBorder.none,
                             filled: true,
-                            fillColor: Colors.grey[400]),
+                            fillColor: Colors.white),
                       ),
                     )
                   ],

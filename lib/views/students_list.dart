@@ -57,51 +57,54 @@ class _StudentsListState extends State<StudentsList> {
                 SingleChildScrollView(
                   // SingleChildScrollView can be removed
                   scrollDirection: Axis.horizontal,
-                  child: SizedBox(
-                    width: MediaQuery.of(context).size.width,
-                    child: DataTable(
-                      columns: [
-                        DataColumn(
-                          label: Text(
-                            'Student Name',
-                            style: TextStyle(fontWeight: FontWeight.bold),
+                  child: Container(
+                    color: Colors.white,
+                    child: SizedBox(
+                      width: MediaQuery.of(context).size.width,
+                      child: DataTable(
+                        columns: [
+                          DataColumn(
+                            label: Text(
+                              'Student Name',
+                              style: TextStyle(fontWeight: FontWeight.bold),
+                            ),
                           ),
-                        ),
-                        DataColumn(
-                          label: Text(
-                            'Student ID',
-                            style: TextStyle(fontWeight: FontWeight.bold),
+                          DataColumn(
+                            label: Text(
+                              'Student ID',
+                              style: TextStyle(fontWeight: FontWeight.bold),
+                            ),
                           ),
-                        ),
-                        DataColumn(
-                          label: Text(
-                            'Email',
-                            style: TextStyle(fontWeight: FontWeight.bold),
+                          DataColumn(
+                            label: Text(
+                              'Email',
+                              style: TextStyle(fontWeight: FontWeight.bold),
+                            ),
                           ),
-                        ),
-                        DataColumn(
-                          label: Text(
-                            'Program and Year Level',
-                            style: TextStyle(fontWeight: FontWeight.bold),
+                          DataColumn(
+                            label: Text(
+                              'Program and Year Level',
+                              style: TextStyle(fontWeight: FontWeight.bold),
+                            ),
                           ),
-                        ),
-                      ],
-                      rows: (snapshot.data?.docs ?? []).map((doc) {
-                        return DataRow(cells: [
-                          DataCell(
-                            Text('${doc.get('full_name')}'),
-                          ),
-                          DataCell(
-                            Text('${doc.get('student_number')}'),
-                          ),
-                          DataCell(
-                            Text('${doc.get('email')}'),
-                          ),
-                          DataCell(
-                            Text('${doc.get('program')}'),
-                          ),
-                        ]);
-                      }).toList(),
+                        ],
+                        rows: (snapshot.data?.docs ?? []).map((doc) {
+                          return DataRow(cells: [
+                            DataCell(
+                              Text('${doc.get('full_name')}'),
+                            ),
+                            DataCell(
+                              Text('${doc.get('student_number')}'),
+                            ),
+                            DataCell(
+                              Text('${doc.get('email')}'),
+                            ),
+                            DataCell(
+                              Text('${doc.get('program')}'),
+                            ),
+                          ]);
+                        }).toList(),
+                      ),
                     ),
                   ),
                 ),

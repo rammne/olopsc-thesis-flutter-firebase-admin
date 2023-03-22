@@ -25,9 +25,12 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
-        navigationRailTheme:
-            NavigationRailThemeData(backgroundColor: Colors.grey[350]),
-        scaffoldBackgroundColor: Colors.grey[350],
+        navigationRailTheme: NavigationRailThemeData(
+          backgroundColor: Colors.blue[200],
+          selectedIconTheme: IconThemeData(color: Colors.yellow),
+          selectedLabelTextStyle: TextStyle(color: Colors.amber[200]),
+        ),
+        scaffoldBackgroundColor: Colors.blue[100],
       ),
       home: DesktopAdminPanel(),
     );

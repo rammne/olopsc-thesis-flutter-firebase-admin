@@ -46,23 +46,23 @@ class _DesktopAdminPanelState extends State<DesktopAdminPanel> {
           builder: (context) => AddItemForm());
     }
 
-    Future<void> deleteAllRequests() async {
-      QuerySnapshot usersSnapshot =
-          await FirebaseFirestore.instance.collection('users').get();
+    // Future<void> deleteAllRequests() async {
+    //   QuerySnapshot usersSnapshot =
+    //       await FirebaseFirestore.instance.collection('users').get();
 
-      WriteBatch batch = FirebaseFirestore.instance.batch();
+    //   WriteBatch batch = FirebaseFirestore.instance.batch();
 
-      for (DocumentSnapshot userDoc in usersSnapshot.docs) {
-        QuerySnapshot requestsSnapshot =
-            await userDoc.reference.collection('requests').get();
+    //   for (DocumentSnapshot userDoc in usersSnapshot.docs) {
+    //     QuerySnapshot requestsSnapshot =
+    //         await userDoc.reference.collection('requests').get();
 
-        for (DocumentSnapshot requestDoc in requestsSnapshot.docs) {
-          batch.delete(requestDoc.reference);
-        }
-      }
+    //     for (DocumentSnapshot requestDoc in requestsSnapshot.docs) {
+    //       batch.delete(requestDoc.reference);
+    //     }
+    //   }
 
-      await batch.commit();
-    }
+    //   await batch.commit();
+    // }
 
     Widget page = ItemList();
     switch (selectedIndex) {
@@ -104,37 +104,31 @@ class _DesktopAdminPanelState extends State<DesktopAdminPanel> {
                                 style: TextStyle(color: Colors.black),
                               ),
                             )
-                          : selectedIndex != 0
-                              ? IconButton(
-                                  onPressed: () {
-                                    deleteAllRequests();
-                                  },
-                                  icon: Icon(Icons.delete))
-                              : Column(
-                                  children: snapshot.data?.docs.map((doc) {
-                                        return Row(
-                                          children: [
-                                            Text(
-                                              'Activate',
-                                              style: TextStyle(
-                                                  fontSize: 16,
-                                                  fontWeight: FontWeight.bold),
-                                            ),
-                                            Checkbox(
-                                              value: doc.get('status'),
-                                              onChanged: (value) async {
-                                                await doc.reference
-                                                    .update({'status': value});
-                                                setState(() {
-                                                  status = value!;
-                                                });
-                                              },
-                                            ),
-                                          ],
-                                        );
-                                      }).toList() ??
-                                      [],
-                                ),
+                          : Column(
+                              children: snapshot.data?.docs.map((doc) {
+                                    return Row(
+                                      children: [
+                                        Text(
+                                          'Activate',
+                                          style: TextStyle(
+                                              fontSize: 16,
+                                              fontWeight: FontWeight.bold),
+                                        ),
+                                        Checkbox(
+                                          value: doc.get('status'),
+                                          onChanged: (value) async {
+                                            await doc.reference
+                                                .update({'status': value});
+                                            setState(() {
+                                              status = value!;
+                                            });
+                                          },
+                                        ),
+                                      ],
+                                    );
+                                  }).toList() ??
+                                  [],
+                            ),
                       minExtendedWidth: 150,
                       destinations: [
                         NavigationRailDestination(

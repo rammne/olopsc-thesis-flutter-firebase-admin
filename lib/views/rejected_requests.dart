@@ -25,7 +25,7 @@ class _RejectedRequestsState extends State<RejectedRequests> {
               stream: FirebaseFirestore.instance
                   .collection('users')
                   .doc(userData.id)
-                  .collection('requests')
+                  .collection('rejected_requests')
                   .snapshots(),
               builder: (context, snapshot) {
                 if (snapshot.hasError) {
@@ -34,17 +34,13 @@ class _RejectedRequestsState extends State<RejectedRequests> {
                 return Column(
                   children: snapshot.hasData && snapshot.data != null
                       ? snapshot.data!.docs.map((QueryDocumentSnapshot doc) {
-                          return Container(
-                            child: doc.get('status') == 'REJECTED'
-                                ? Card(
-                                    child: ListTile(
-                                      title: Text(
-                                          '${doc.get('item_name_requested')} --- ${userData['full_name']}'),
-                                      subtitle: Text(
-                                          '${doc.get('item_quantity_requested')} --- ${doc.get('status')}'),
-                                    ),
-                                  )
-                                : null,
+                          return Card(
+                            child: ListTile(
+                              title: Text(
+                                  '${doc.get('item_name_rejected')} --- ${userData['full_name']}'),
+                              subtitle: Text(
+                                  '${doc.get('item_quantity_rejected')} --- ${doc.get('status')}'),
+                            ),
                           );
                         }).toList()
                       : [],

@@ -24,8 +24,9 @@ class _ItemListState extends State<ItemList> {
               itemBuilder: (context, index) {
                 DocumentSnapshot itemData = snapshot.data!.docs[index];
                 return Dismissible(
+                  direction: DismissDirection.startToEnd,
                   background: Container(
-                    color: Colors.grey[400],
+                    color: Colors.red[400],
                   ),
                   key: UniqueKey(),
                   child: Card(
