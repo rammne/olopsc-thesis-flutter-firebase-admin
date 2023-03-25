@@ -11,7 +11,7 @@ class AddItemForm extends StatefulWidget {
 class _AddItemFormState extends State<AddItemForm> {
   final _formKey = GlobalKey<FormState>();
   String itemName = '';
-  int itemQuantity = 0;
+  int itemStocks = 0;
   @override
   Widget build(BuildContext context) {
     return Form(
@@ -38,10 +38,14 @@ class _AddItemFormState extends State<AddItemForm> {
               onFieldSubmitted: (value) async {
                 if (_formKey.currentState!.validate() &&
                     (itemName != '' && itemName != null) &&
-                    (itemQuantity != '' && itemQuantity != null)) {
+                    (itemStocks != '' && itemStocks != null)) {
                   Navigator.pop(context);
-                  await FirebaseFirestore.instance.collection('items').add(
-                      {'item_name': itemName, 'item_quantity': itemQuantity});
+                  await FirebaseFirestore.instance.collection('items').add({
+                    'item_name': itemName,
+                    'item_stocks': itemStocks,
+                    'available_items': null,
+                    'remarks': null,
+                  });
                 }
               },
             ),
@@ -62,7 +66,7 @@ class _AddItemFormState extends State<AddItemForm> {
               onChanged: (value) {
                 setState(() {
                   try {
-                    itemQuantity = int.parse(value);
+                    itemStocks = int.parse(value);
                   } catch (e) {
                     print(e.toString());
                   }
@@ -71,10 +75,14 @@ class _AddItemFormState extends State<AddItemForm> {
               onFieldSubmitted: (value) async {
                 if (_formKey.currentState!.validate() &&
                     (itemName != '' && itemName != null) &&
-                    (itemQuantity != '' && itemQuantity != null)) {
+                    (itemStocks != '' && itemStocks != null)) {
                   Navigator.pop(context);
-                  await FirebaseFirestore.instance.collection('items').add(
-                      {'item_name': itemName, 'item_quantity': itemQuantity});
+                  await FirebaseFirestore.instance.collection('items').add({
+                    'item_name': itemName,
+                    'item_stocks': itemStocks,
+                    'available_items': null,
+                    'remarks': null,
+                  });
                 }
               },
             ),

@@ -26,7 +26,7 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         navigationRailTheme: NavigationRailThemeData(
-          backgroundColor: Colors.blue[200],
+          backgroundColor: Colors.blue[300],
           selectedIconTheme: IconThemeData(color: Colors.yellow),
           selectedLabelTextStyle: TextStyle(color: Colors.amber[200]),
         ),

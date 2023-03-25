@@ -9,9 +9,27 @@ class RequestsPage extends StatefulWidget {
 }
 
 class _RequestsPageState extends State<RequestsPage> {
-  int i = 0;
   @override
   Widget build(BuildContext context) {
+    Future<void> _onEditTap(String requestID, String itemName, String itemID,
+        int itemQuantity, String userID) {
+      return showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            scrollable: true,
+            content: RequestForm(
+              requestID: requestID,
+              itemNameRequested: itemName,
+              itemQuantityRequested: itemQuantity,
+              userID: userID,
+              itemID: itemID,
+            ),
+          );
+        },
+      );
+    }
+
     return StreamBuilder(
       stream: FirebaseFirestore.instance.collection('users').snapshots(),
       builder: (context, userSnapshot) {
@@ -30,6 +48,7 @@ class _RequestsPageState extends State<RequestsPage> {
                   .collection('users')
                   .doc(userData.id)
                   .collection('pending_requests')
+                  .orderBy("date_time")
                   .snapshots(),
               builder: (context, snapshot) {
                 if (snapshot.hasError) {
@@ -48,113 +67,157 @@ class _RequestsPageState extends State<RequestsPage> {
                       DataColumn(label: Text('Date and Time')),
                       DataColumn(label: Text('')),
                     ],
-                    rows: (snapshot.data?.docs ?? []).map((doc) {
-                      Timestamp? _timeStamp = doc.get('date_time');
-                      DateTime? _dateTime =
-                          _timeStamp != null ? _timeStamp.toDate() : null;
+                    rows: (snapshot.data?.docs ?? [])
+                        .asMap()
+                        .entries
+                        .map((entry) {
+                      final index = entry.key;
+                      final doc = entry.value;
+                      Timestamp? timeStamp = doc.get('date_time');
+                      DateTime? dateTime =
+                          timeStamp != null ? timeStamp.toDate() : null;
                       String formattedDateTime =
-                          DateFormat('MM-dd-yyyy – kk:mm').format(_dateTime!);
-                      return DataRow(cells: [
-                        DataCell(
-                          Text('${doc.get('item_name_requested')}'),
-                        ),
-                        DataCell(
-                          Text('${doc.get('item_quantity_requested')}'),
-                        ),
-                        DataCell(
-                          Text('${userData.get('full_name')}'),
-                        ),
-                        DataCell(
-                          Text('${formattedDateTime}'),
-                        ),
-                        DataCell(
-                          Row(mainAxisSize: MainAxisSize.min, children: [
-                            ElevatedButton(
-                              onPressed: () async {
-                                dynamic itemSnapshot = await FirebaseFirestore
-                                    .instance
-                                    .collection('items')
-                                    .doc(doc.get('item_id'))
-                                    .get();
-                                await FirebaseFirestore.instance
-                                    .collection('items')
-                                    .doc(doc.get('item_id'))
-                                    .update({
-                                  'item_quantity':
-                                      itemSnapshot['item_quantity'] -
-                                          doc.get('item_quantity_requested')
-                                });
-                                await FirebaseFirestore.instance
-                                    .collection('users')
-                                    .doc(userData.id)
-                                    .collection('accepted_requests')
-                                    .add({
-                                  'item_id': doc.get('item_id'),
-                                  'item_name_accepted':
-                                      doc.get('item_name_requested'),
-                                  'item_quantity_accepted':
-                                      doc.get('item_quantity_requested'),
-                                  'date_time': FieldValue.serverTimestamp(),
-                                  'status': 'ACCEPTED',
-                                });
-                                await doc.reference.delete();
-                              },
-                              child: Text('Confirm'),
-                            ),
-                            SizedBox(
-                              width: 10,
-                            ),
-                            ElevatedButton(
-                              onPressed: () async {
-                                await FirebaseFirestore.instance
-                                    .collection('users')
-                                    .doc(userData.id)
-                                    .collection('rejected_requests')
-                                    .add({
-                                  'item_id': doc.get('item_id'),
-                                  'item_name_rejected':
-                                      doc.get('item_name_requested'),
-                                  'item_quantity_rejected':
-                                      doc.get('item_quantity_requested'),
-                                  'date_time': FieldValue.serverTimestamp(),
-                                  'status': 'REJECTED',
-                                });
-                                await doc.reference.delete();
-                              },
-                              style: ButtonStyle(
-                                backgroundColor:
-                                    MaterialStateProperty.all(Colors.red),
+                          DateFormat('MM-dd-yyyy – kk:mm').format(dateTime!);
+                      return DataRow(
+                          color: index == 0
+                              ? MaterialStateProperty.all(Colors.white)
+                              : MaterialStateProperty.all(Colors.grey),
+                          cells: [
+                            DataCell(
+                              Text(
+                                '${doc.get('item_name_requested')}',
+                                style: TextStyle(
+                                    color:
+                                        index == 0 ? null : Colors.grey[350]),
                               ),
-                              child: Text('Cancel'),
                             ),
-                            SizedBox(
-                              width: 20,
-                            ),
-                            ElevatedButton(
-                              style: ButtonStyle(
-                                backgroundColor:
-                                    MaterialStateProperty.all(Colors.black),
+                            DataCell(
+                              Text(
+                                '${doc.get('item_quantity_requested')}',
+                                style: TextStyle(
+                                    color:
+                                        index == 0 ? null : Colors.grey[350]),
                               ),
-                              onPressed: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => RequestForm(
-                                        itemNameRequested:
-                                            doc.get('item_name_requested'),
-                                        requestID: doc.id,
-                                        itemQuantityRequested:
-                                            doc.get('item_quantity_requested'),
-                                        userID: userData.id,
-                                        itemID: doc.get('item_id')),
+                            ),
+                            DataCell(
+                              Text(
+                                '${userData.get('full_name')}',
+                                style: TextStyle(
+                                    color:
+                                        index == 0 ? null : Colors.grey[350]),
+                              ),
+                            ),
+                            DataCell(
+                              Text(
+                                '${formattedDateTime}',
+                                style: TextStyle(
+                                    color:
+                                        index == 0 ? null : Colors.grey[350]),
+                              ),
+                            ),
+                            DataCell(
+                              Row(mainAxisSize: MainAxisSize.min, children: [
+                                ElevatedButton(
+                                  onPressed: index == 0
+                                      ? () async {
+                                          dynamic itemSnapshot =
+                                              await FirebaseFirestore.instance
+                                                  .collection('items')
+                                                  .doc(doc.get('item_id'))
+                                                  .get();
+                                          await FirebaseFirestore.instance
+                                              .collection('items')
+                                              .doc(doc.get('item_id'))
+                                              .update({
+                                            'item_quantity': itemSnapshot[
+                                                    'item_quantity'] -
+                                                doc.get(
+                                                    'item_quantity_requested')
+                                          });
+                                          await FirebaseFirestore.instance
+                                              .collection('users')
+                                              .doc(userData.id)
+                                              .collection('accepted_requests')
+                                              .add({
+                                            'item_id': doc.get('item_id'),
+                                            'item_name_accepted':
+                                                doc.get('item_name_requested'),
+                                            'item_quantity_accepted': doc
+                                                .get('item_quantity_requested'),
+                                            'date_time':
+                                                FieldValue.serverTimestamp(),
+                                            'status': 'ACCEPTED',
+                                          });
+                                          await doc.reference.delete();
+                                        }
+                                      : null,
+                                  child: Text(
+                                    'Confirm',
+                                    style: TextStyle(
+                                        color: index == 0 ? null : Colors.grey),
                                   ),
-                                );
-                              },
-                              child: Text('Edit'),
-                            ),
-                          ]),
-                        )
-                      ]);
+                                ),
+                                SizedBox(
+                                  width: 10,
+                                ),
+                                ElevatedButton(
+                                  onPressed: index == 0
+                                      ? () async {
+                                          await FirebaseFirestore.instance
+                                              .collection('users')
+                                              .doc(userData.id)
+                                              .collection('rejected_requests')
+                                              .add({
+                                            'item_id': doc.get('item_id'),
+                                            'item_name_rejected':
+                                                doc.get('item_name_requested'),
+                                            'item_quantity_rejected': doc
+                                                .get('item_quantity_requested'),
+                                            'date_time':
+                                                FieldValue.serverTimestamp(),
+                                            'status': 'REJECTED',
+                                          });
+                                          await doc.reference.delete();
+                                        }
+                                      : null,
+                                  style: ButtonStyle(
+                                    backgroundColor: index == 0
+                                        ? MaterialStateProperty.all(Colors.red)
+                                        : null,
+                                  ),
+                                  child: Text(
+                                    'Cancel',
+                                    style: TextStyle(
+                                        color: index == 0 ? null : Colors.grey),
+                                  ),
+                                ),
+                                SizedBox(
+                                  width: 20,
+                                ),
+                                ElevatedButton(
+                                  style: ButtonStyle(
+                                    backgroundColor: index == 0
+                                        ? MaterialStateProperty.all(
+                                            Colors.black)
+                                        : null,
+                                  ),
+                                  onPressed: index == 0
+                                      ? () => _onEditTap(
+                                          doc.id,
+                                          doc.get('item_name_requested'),
+                                          doc.get('item_id'),
+                                          doc.get('item_quantity_requested'),
+                                          userData.id)
+                                      : null,
+                                  child: Text(
+                                    'Edit',
+                                    style: TextStyle(
+                                        color: index == 0 ? null : Colors.grey),
+                                  ),
+                                ),
+                              ]),
+                            )
+                          ]);
                     }).toList(),
                   ),
                 );
