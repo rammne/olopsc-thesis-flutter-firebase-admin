@@ -38,12 +38,12 @@ class _DesktopAdminPanelState extends State<DesktopAdminPanel> {
   @override
   Widget build(BuildContext context) {
     void _showSettings() async {
-      showModalBottomSheet(
-          constraints: BoxConstraints(maxWidth: 400),
-          shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.all(Radius.circular(30))),
-          context: context,
-          builder: (context) => AddItemForm());
+      showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          content: AddItemForm(),
+        ),
+      );
     }
 
     // Future<void> deleteAllRequests() async {

@@ -59,8 +59,13 @@ class _RequestFormState extends State<RequestForm> {
               height: 15,
             ),
             TextFormField(
-              validator: (value) =>
-                  value == '' && value == null ? remarks = 'No Remarks' : null,
+              validator: (value) {
+                if (value!.isEmpty) {
+                  remarks = 'No Remarks';
+                }
+                return null;
+              },
+              autofocus: true,
               onChanged: (value) {
                 setState(() {
                   remarks = value;
@@ -87,8 +92,8 @@ class _RequestFormState extends State<RequestForm> {
                         .collection('items')
                         .doc(widget.itemID)
                         .update({
-                      'item_quantity':
-                          itemSnapshot['item_quantity'] - updatedQuantity,
+                      'available_items':
+                          itemSnapshot['available_items'] - updatedQuantity,
                     });
                     await FirebaseFirestore.instance
                         .collection('users')
@@ -119,7 +124,7 @@ class _RequestFormState extends State<RequestForm> {
                         .collection('items')
                         .doc(widget.itemID)
                         .update({
-                      'item_quantity': itemSnapshot['item_quantity'] -
+                      'available_items': itemSnapshot['available_items'] -
                           widget.itemQuantityRequested,
                     });
                     await FirebaseFirestore.instance

@@ -12,7 +12,7 @@ class _RequestsPageState extends State<RequestsPage> {
   @override
   Widget build(BuildContext context) {
     Future<void> _onEditTap(String requestID, String itemName, String itemID,
-        int itemQuantity, String userID) {
+        int available_items, String userID) {
       return showDialog(
         context: context,
         builder: (context) {
@@ -21,7 +21,7 @@ class _RequestsPageState extends State<RequestsPage> {
             content: RequestForm(
               requestID: requestID,
               itemNameRequested: itemName,
-              itemQuantityRequested: itemQuantity,
+              itemQuantityRequested: available_items,
               userID: userID,
               itemID: itemID,
             ),
@@ -129,8 +129,8 @@ class _RequestsPageState extends State<RequestsPage> {
                                               .collection('items')
                                               .doc(doc.get('item_id'))
                                               .update({
-                                            'item_quantity': itemSnapshot[
-                                                    'item_quantity'] -
+                                            'available_items': itemSnapshot[
+                                                    'available_items'] -
                                                 doc.get(
                                                     'item_quantity_requested')
                                           });

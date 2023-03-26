@@ -28,9 +28,8 @@ class _ItemListState extends State<ItemList> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.yellow[100],
-      body: FutureBuilder(
-        future: FirebaseFirestore.instance.collection('items').get(),
+      body: StreamBuilder(
+        stream: FirebaseFirestore.instance.collection('items').snapshots(),
         builder: (context, snapshot) {
           if (snapshot.hasError) {
             return Text('Something went wrong');
@@ -79,8 +78,8 @@ class _ItemListState extends State<ItemList> {
 
                       return DataRow(
                           color: index.isOdd
-                              ? MaterialStateProperty.all(Colors.grey[400])
-                              : MaterialStateProperty.all(Colors.grey[200]),
+                              ? MaterialStateProperty.all(Colors.yellow[200])
+                              : MaterialStateProperty.all(Colors.blue[200]),
                           cells: [
                             ////////////////// ITEM NAME CELL ////////////////////////////////
                             DataCell(

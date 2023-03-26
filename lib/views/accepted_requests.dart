@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 class AcceptedRequests extends StatefulWidget {
   const AcceptedRequests({super.key});
@@ -12,23 +13,11 @@ class _AcceptedRequestsState extends State<AcceptedRequests> {
   @override
   Widget build(BuildContext context) {
     void _showSettings(remarks) {
-      showModalBottomSheet(
-        backgroundColor: Colors.grey[350],
+      showDialog(
         context: context,
-        constraints:
-            BoxConstraints(maxWidth: MediaQuery.of(context).size.width / 2),
-        shape: Border.all(width: 5, color: Color(Colors.blue.shade300.value)),
-        builder: ((context) {
-          return Container(
-            height: 500,
-            child: Center(
-              child: Text(
-                '${remarks}',
-                style: TextStyle(fontSize: 20),
-              ),
-            ),
-          );
-        }),
+        builder: (context) => AlertDialog(
+          content: Text('${remarks}'),
+        ),
       );
     }
 
@@ -55,8 +44,10 @@ class _AcceptedRequestsState extends State<AcceptedRequests> {
                 return Column(
                   children: snapshot.hasData && snapshot.data != null
                       ? snapshot.data!.docs.map((QueryDocumentSnapshot doc) {
-                          Timestamp _timeStamp = doc.get('date_time');
-                          DateTime _dateTime = _timeStamp.toDate();
+                          Timestamp timeStamp = doc.get('date_time');
+                          DateTime dateTime = timeStamp.toDate();
+                          String formattedDateTime =
+                              DateFormat('MM-dd-yyyy – kk:mm').format(dateTime);
                           return Card(
                             child: ListTile(
                               trailing: IconButton(
@@ -70,9 +61,8 @@ class _AcceptedRequestsState extends State<AcceptedRequests> {
                                 icon: Icon(Icons.mail),
                               ),
                               title: Text(
-                                  '${doc.get('item_name_accepted')} --- ${userData['full_name']}'),
-                              subtitle: Text(
-                                  '${doc.get('item_quantity_accepted')} --- ${doc.get('status')} --- ${_dateTime.month} ${_dateTime.day}, ${_dateTime.year} at ${_dateTime.hour}:${_dateTime.minute}'),
+                                  // ignore: unnecessary_brace_in_string_interps
+                                  ' ${doc.get('item_quantity_accepted')} ${doc.get('item_name_accepted')} for ${userData['full_name']} at ${formattedDateTime}'),
                             ),
                           );
                         }).toList()
