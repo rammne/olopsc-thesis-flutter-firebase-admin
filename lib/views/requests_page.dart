@@ -10,8 +10,6 @@ class RequestsPage extends StatefulWidget {
 
 class _RequestsPageState extends State<RequestsPage> {
   String userFullName = '';
-  Query subCollection =
-      FirebaseFirestore.instance.collectionGroup('pending_requests');
 
   @override
   Widget build(BuildContext context) {
@@ -36,10 +34,14 @@ class _RequestsPageState extends State<RequestsPage> {
 
     return Scaffold(
       body: StreamBuilder(
-        stream: subCollection.snapshots(),
+        stream: FirebaseFirestore.instance
+            .collectionGroup('pending_requests')
+            .orderBy('date_time')
+            .snapshots(),
         builder: (context, snapshot) {
           if (snapshot.hasError) {
-            return Text('Something went wrong (Users)');
+            print(snapshot.error.toString());
+            return Text('Something went wrong ${snapshot.error.toString()}');
           }
           if (snapshot.connectionState == ConnectionState.waiting) {
             return Center(child: CircularProgressIndicator());
@@ -51,7 +53,7 @@ class _RequestsPageState extends State<RequestsPage> {
                 columns: [
                   DataColumn(label: Text('Item Name')),
                   DataColumn(label: Text('Quantity')),
-                  // DataColumn(label: Text('Student Name')),
+                  DataColumn(label: Text('Student Name')),
                   DataColumn(label: Text('Date and Time')),
                   DataColumn(label: Text('')),
                 ],
@@ -65,26 +67,6 @@ class _RequestsPageState extends State<RequestsPage> {
                   DateTime? dateTime = timeStamp!.toDate();
                   String formattedDate = DateFormat('yMMMMd').format(dateTime);
                   String formattedTime = DateFormat('jm').format(dateTime);
-
-                  FirebaseFirestore.instance
-                      .collection('users')
-                      .doc(parent.id)
-                      .snapshots()
-                      .listen((event) {
-                    setState(() {
-                      userFullName = event.get('full_name');
-                    });
-                  });
-                  print(userFullName);
-                  // FirebaseFirestore.instance
-                  //     .collection('users')
-                  //     .doc(parent.id)
-                  //     .snapshots()
-                  //     .listen(
-                  //   (event) {
-                  //     print(event.get('full_name'));
-                  //   },
-                  // );
 
                   return DataRow(
                     color: index == 0
@@ -105,13 +87,26 @@ class _RequestsPageState extends State<RequestsPage> {
                               color: index == 0 ? null : Colors.grey[350]),
                         ),
                       ),
-                      // DataCell(
-                      //   Text(
-                      //     '${userData.get('full_name')}',
-                      //     style: TextStyle(
-                      //         color: index == 0 ? null : Colors.grey[350]),
-                      //   ),
-                      // ),
+                      DataCell(StreamBuilder(
+                        stream: FirebaseFirestore.instance
+                            .collection('users')
+                            .doc(parent.id)
+                            .snapshots(),
+                        builder: (context, snapshot) {
+                          if (snapshot.hasError) {
+                            return Text(
+                                'Something went wrong ${snapshot.error.toString()}');
+                          }
+                          if (!snapshot.hasData) {
+                            return Text('Loading Data...');
+                          }
+                          return Text(
+                            '${snapshot.data!.get('full_name') ?? ''}',
+                            style: TextStyle(
+                                color: index == 0 ? null : Colors.grey[350]),
+                          );
+                        },
+                      )),
                       DataCell(
                         Text(
                           '${formattedDate} at ${formattedTime}',

@@ -1,4 +1,3 @@
-import 'package:admin/admin_panel/admin_panel.dart';
 import 'package:admin/firebase_options.dart';
 import 'package:admin/views/responsive_views/desktop_view.dart';
 import 'package:flutter/material.dart';
