@@ -1,3 +1,4 @@
+import 'package:admin/views/profile_records.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -33,8 +34,8 @@ class _StudentsListState extends State<StudentsList> {
                 Container(
                   child: MediaQuery.of(context).size.width <= 700
                       ? null
-                      : Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 200),
+                      : SizedBox(
+                          width: MediaQuery.of(context).size.width / 4,
                           child: TextField(
                             onChanged: (value) {
                               setState(() {
@@ -42,7 +43,7 @@ class _StudentsListState extends State<StudentsList> {
                               });
                             },
                             decoration: InputDecoration(
-                              hintText: 'Student Number search for now',
+                              hintText: 'Student Number...',
                               icon: Icon(Icons.search),
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(30),
@@ -84,6 +85,7 @@ class _StudentsListState extends State<StudentsList> {
                             style: TextStyle(fontWeight: FontWeight.bold),
                           ),
                         ),
+                        DataColumn(label: Text(''))
                       ],
                       rows: (snapshot.data?.docs ?? [])
                           .asMap()
@@ -107,6 +109,18 @@ class _StudentsListState extends State<StudentsList> {
                               ),
                               DataCell(
                                 Text('${doc.get('program')}'),
+                              ),
+                              DataCell(
+                                IconButton(
+                                  icon: Icon(Icons.account_box),
+                                  onPressed: () => Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) =>
+                                          ProfileReport(userID: doc.id),
+                                    ),
+                                  ),
+                                ),
                               ),
                             ]);
                       }).toList(),

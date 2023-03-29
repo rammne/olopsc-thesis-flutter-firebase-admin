@@ -23,6 +23,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      title: 'OLOPSC - Admin',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         navigationRailTheme: NavigationRailThemeData(

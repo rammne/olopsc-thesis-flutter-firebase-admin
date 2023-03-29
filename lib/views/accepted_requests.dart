@@ -1,9 +1,13 @@
+// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 class AcceptedRequests extends StatefulWidget {
-  const AcceptedRequests({super.key});
+  String studentIDQuery;
+  AcceptedRequests({
+    required this.studentIDQuery,
+  });
 
   @override
   State<AcceptedRequests> createState() => _AcceptedRequestsState();
@@ -22,7 +26,13 @@ class _AcceptedRequestsState extends State<AcceptedRequests> {
     }
 
     return StreamBuilder(
-      stream: FirebaseFirestore.instance.collection('users').snapshots(),
+      stream: widget.studentIDQuery != '' && widget.studentIDQuery != null
+          ? FirebaseFirestore.instance
+              .collection('users')
+              .where('student_number_search',
+                  arrayContains: widget.studentIDQuery)
+              .snapshots()
+          : FirebaseFirestore.instance.collection('users').snapshots(),
       builder: (context, userSnapshot) {
         if (userSnapshot.hasError) {
           return Text('Something went wrong (User)');
@@ -46,8 +56,10 @@ class _AcceptedRequestsState extends State<AcceptedRequests> {
                       ? snapshot.data!.docs.map((QueryDocumentSnapshot doc) {
                           Timestamp timeStamp = doc.get('date_time');
                           DateTime dateTime = timeStamp.toDate();
-                          String formattedDateTime =
-                              DateFormat('MM-dd-yyyy – kk:mm').format(dateTime);
+                          String formattedDate =
+                              DateFormat('yMMMd').format(dateTime);
+                          String formattedTime =
+                              DateFormat('jm').format(dateTime);
                           return Card(
                             child: ListTile(
                               trailing: IconButton(
@@ -62,7 +74,7 @@ class _AcceptedRequestsState extends State<AcceptedRequests> {
                               ),
                               title: Text(
                                   // ignore: unnecessary_brace_in_string_interps
-                                  ' ${doc.get('item_quantity_accepted')} ${doc.get('item_name_accepted')} for ${userData['full_name']} at ${formattedDateTime}'),
+                                  ' ${doc.get('item_quantity_accepted')} ${doc.get('item_name_accepted')} for ${userData['full_name']} at ${formattedTime} of ${formattedDate}'),
                             ),
                           );
                         }).toList()

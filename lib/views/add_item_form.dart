@@ -12,6 +12,28 @@ class _AddItemFormState extends State<AddItemForm> {
   final _formKey = GlobalKey<FormState>();
   String itemName = '';
   int itemStocks = 0;
+
+  Future<void> addItem(String itemName, int itemStocks) async {
+    setSearchParam(String itemName) {
+      List<String> caseSearchList = [];
+      String temp = '';
+      for (int i = 0; i < itemName.length; i++) {
+        temp += itemName[i];
+        caseSearchList.add(temp.toLowerCase());
+      }
+      return caseSearchList;
+    }
+
+    await FirebaseFirestore.instance.collection('items').add({
+      'item_name': itemName,
+      'item_stocks': itemStocks,
+      'available_items': null,
+      'lent_items': 0,
+      'remarks': null,
+      'searchable_item_name': setSearchParam(itemName)
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
@@ -34,7 +56,7 @@ class _AddItemFormState extends State<AddItemForm> {
                 decoration: InputDecoration(border: OutlineInputBorder()),
                 onChanged: (value) {
                   setState(() {
-                    itemName = value;
+                    itemName = value.toUpperCase();
                   });
                 },
                 onFieldSubmitted: (value) async {
@@ -42,12 +64,7 @@ class _AddItemFormState extends State<AddItemForm> {
                       (itemName != '' && itemName != null) &&
                       (itemStocks != '' && itemStocks != null)) {
                     Navigator.pop(context);
-                    await FirebaseFirestore.instance.collection('items').add({
-                      'item_name': itemName,
-                      'item_stocks': itemStocks,
-                      'available_items': null,
-                      'remarks': null,
-                    });
+                    addItem(itemName, itemStocks);
                   }
                 },
               ),
@@ -79,12 +96,7 @@ class _AddItemFormState extends State<AddItemForm> {
                       (itemName != '' && itemName != null) &&
                       (itemStocks != '' && itemStocks != null)) {
                     Navigator.pop(context);
-                    await FirebaseFirestore.instance.collection('items').add({
-                      'item_name': itemName,
-                      'item_stocks': itemStocks,
-                      'available_items': null,
-                      'remarks': null,
-                    });
+                    addItem(itemName, itemStocks);
                   }
                 },
               ),
@@ -103,12 +115,7 @@ class _AddItemFormState extends State<AddItemForm> {
                     (itemName != '' && itemName != null) &&
                     (itemStocks != '' && itemStocks != null)) {
                   Navigator.pop(context);
-                  await FirebaseFirestore.instance.collection('items').add({
-                    'item_name': itemName,
-                    'item_stocks': itemStocks,
-                    'available_items': null,
-                    'remarks': null,
-                  });
+                  addItem(itemName, itemStocks);
                 }
               },
               child: Text('Add Item'),
